@@ -38,7 +38,7 @@ public class Loan {
     public LoanState getState() {
         return state;
     }
-
+// es el unico que podemos modificar
     public void setState(LoanState state) {
         this.state = state;
     }
