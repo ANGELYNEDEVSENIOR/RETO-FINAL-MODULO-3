@@ -1,23 +1,17 @@
 package com.devsenior.angelynegonzalez;
-
-import com.devsenior.angelynegonzalez.model.Book;
-import com.devsenior.angelynegonzalez.model.Loan;
-import com.devsenior.angelynegonzalez.model.User;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
+import com.devsenior.angelynegonzalez.model.Book;
+
 public class Biblioteca {
+  private List<Book> books;
 
+public Biblioteca() {
+    this.books = new ArrayList<>();
+}
   private final Scanner scanner = new Scanner(System.in);
-  private final Map<Integer, Book> books = new HashMap<>();
-  private final Map<Integer, User> users = new HashMap<>();
-  private final List<Loan> loans = new ArrayList<>();
-  private int nextBookId = 1;
-  private int nextUserId = 1;
-
   public void mostrarMenu() {
     System.out.println("\nMenú de la Biblioteca");
     System.out.println("1. Agregar Libros");
@@ -28,160 +22,6 @@ public class Biblioteca {
     System.out.println("6. Consultar mi biblioteca");
     System.out.println("7. Salir");
     System.out.print("Seleccione una opción: ");
-  }
-
-  public void AddBook() {
-    System.out.println("\n--- Agregar Nuevo Libro ---");
-    System.out.print("Título: ");
-    String title = scanner.nextLine();
-    System.out.print("Autor: ");
-    String author = scanner.nextLine();
-    System.out.print("ISBN: ");
-    String isbn = scanner.nextLine();
-
-    Book newBook = new Book(nextBookId++, title, author, isbn);
-    books.put(newBook.getId(), newBook);
-    System.out.println("Libro agregado con ID: " + newBook.getId());
-  }
-
-  public void ConsultBook() {
-    System.out.println("\n--- Consultar Libro ---");
-    System.out.print("Ingrese el ID del libro: ");
-    int id = scanner.nextInt();
-    scanner.nextLine(); // Consumir la nueva línea
-
-    Book book = books.get(id);
-    if (book != null) {
-      System.out.println("Información del Libro:");
-      System.out.println(book);
-    } else {
-      System.out.println("No se encontró ningún libro con el ID: " + id);
-    }
-  }
-
-  public void RegisterUserAccounta() {
-    System.out.println("\n--- Registrar Nuevo Usuario ---");
-    System.out.print("Nombre: ");
-    String name = scanner.nextLine();
-    System.out.print("Dirección: ");
-    String address = scanner.nextLine();
-    System.out.print("Teléfono: ");
-    String phone = scanner.nextLine();
-
-    User newUser = new User(nextUserId++, name, address, phone);
-    users.put(newUser.getId(), newUser);
-    System.out.println("Usuario registrado con ID: " + newUser.getId());
-  }
-
-  public void LoanBook() {
-    System.out.println("\n--- Realizar Préstamo ---");
-    System.out.print("Ingrese el ID del usuario: ");
-    int userId = scanner.nextInt();
-    scanner.nextLine(); // Consumir la nueva línea
-
-    User user = users.get(userId);
-    if (user == null) {
-      System.out.println("No se encontró ningún usuario con el ID: " + userId);
-      return;
-    }
-
-    System.out.print("Ingrese el ID del libro a prestar: ");
-    int bookId = scanner.nextInt();
-    scanner.nextLine(); // Consumir la nueva línea
-
-    Book book = books.get(bookId);
-    if (book == null) {
-      System.out.println("No se encontró ningún libro con el ID: " + bookId);
-      return;
-    }
-
-    // Verificar si el libro ya está prestado
-    boolean isBorrowed = false;
-    for (Loan loan : loans) {
-      if (loan.getBookId() == bookId) {
-        isBorrowed = true;
-        break;
-      }
-    }
-    if (isBorrowed) {
-      System.out.println("El libro con ID " + bookId + " ya está prestado.");
-      return;
-    }
-
-    System.out.print("Ingrese la fecha de préstamo (YYYY-MM-DD): ");
-    String loanDate = scanner.nextLine();
-
-    Loan newLoan = new Loan(bookId, userId, loanDate);
-    loans.add(newLoan);
-
-    // Actualizar la lista de libros prestados del usuario
-    user.addBookBorrowed(bookId);
-
-    System.out.println("Préstamo registrado exitosamente.");
-  }
-
-  public void ReturnBook() {
-    System.out.println("\n--- Devolver Libro ---");
-    System.out.print("Ingrese el ID del libro a devolver: ");
-    int bookIdToReturn = scanner.nextInt();
-    scanner.nextLine(); // Consumir la nueva línea
-
-    Loan loanToRemove = null;
-    for (Loan loan : loans) {
-      if (loan.getBookId() == bookIdToReturn) {
-        loanToRemove = loan;
-        break;
-      }
-    }
-
-    if (loanToRemove != null) {
-      loans.remove(loanToRemove);
-      int userId = loanToRemove.getUserId();
-      User user = users.get(userId);
-      if (user != null) {
-        user.removeBookBorrowed(bookIdToReturn);
-        System.out.println("Libro con ID " + bookIdToReturn + " devuelto exitosamente.");
-      } else {
-        System.out.println("Error: No se encontró el usuario asociado al préstamo.");
-      }
-    } else {
-      System.out.println("No se encontró ningún préstamo para el libro con ID " + bookIdToReturn + ".");
-    }
-  }
-
-  public void ViewMyLibrary() {
-    System.out.println("\n--- Consultar mi biblioteca (Préstamos) ---");
-    System.out.print("Ingrese su ID de usuario: ");
-    int userId = scanner.nextInt();
-    scanner.nextLine(); // Consumir la nueva línea
-
-    User user = users.get(userId);
-    if (user == null) {
-      System.out.println("No se encontró ningún usuario con el ID: " + userId);
-      return;
-    }
-
-    List<Integer> borrowedBookIds = user.getBorrowedBooks();
-    if (borrowedBookIds.isEmpty()) {
-      System.out.println(user.getName() + " no tiene ningún libro prestado actualmente.");
-      return;
-    }
-
-    System.out.println("Libros que ha prestado " + user.getName() + ":");
-    for (int borrowedBookId : borrowedBookIds) {
-      Book book = books.get(borrowedBookId);
-      if (book != null) {
-        System.out.println("- " + book.getTitle() + " (ID: " + book.getId() + ")");
-      } else {
-        System.out.println("- ID de libro: " + borrowedBookId + " (Información no disponible)");
-      }
-    }
-  }
-
-  public void Exit() {
-    System.out.println("Saliendo del sistema de la biblioteca. ¡Hasta luego!");
-    scanner.close();
-    System.exit(0);
   }
 
   public static void main(String[] args) {
@@ -217,5 +57,94 @@ public class Biblioteca {
           System.out.println("Opción inválida");
       }
     }
+  }
+
+  private void Exit() {
+    try {
+      scanner.close();
+    } catch (Exception e) {
+      System.out.println("Error al cerrar el Scanner: " + e.getMessage());
+    }
+  }
+
+
+  private void ViewMyLibrary() {
+    if (books.isEmpty()) {
+      System.out.println("La biblioteca está vacía.");
+  } else {
+      System.out.println("\nLibros en la biblioteca:");
+      for (Book book : books) {
+          System.out.println(book);
+      }
+    }
+  }
+
+  private void RegisterUserAccounta() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'RegisterUserAccounta'");
+  }
+
+  private void ReturnBook() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'ReturnBook'");
+  }
+
+  private void LoanBook() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'LoanBook'");
+  }
+
+  private void ConsultBook() {
+    System.out.println("\n¿Cómo desea buscar el libro?");
+        System.out.println("1. Por título");
+        System.out.println("2. Por ISBN");
+        System.out.print("Seleccione una opción: ");
+        int searchOption = scanner.nextInt();
+        scanner.nextLine(); // Consume la nueva línea
+
+        if (searchOption == 1) {
+            System.out.print("Ingrese el título del libro a buscar: ");
+            String searchTitle = scanner.nextLine();
+            boolean found = false;
+            for (Book book : books) {
+                if (book.getTitle().toLowerCase().contains(searchTitle.toLowerCase())) {
+                    System.out.println("Libro encontrado:");
+                    System.out.println(book);
+                    found = true;
+                }
+            }
+            // Si no se encontraron libros con el título buscado
+            if (!found) {
+              System.out.println("No se encontraron libros con el título '" + searchTitle + "'.");
+          }
+          // Si se encontraron libros con el título buscado
+      } else if (searchOption == 2) {
+          System.out.print("Ingrese el ISBN del libro a buscar: ");
+          String searchIsbn = scanner.nextLine();
+          for (Book book : books) {
+              if (book.getIsbn().equals(searchIsbn)) {
+                  System.out.println("Libro encontrado:");
+                  System.out.println(book);
+                  return; // Si se encuentra el libro por ISBN, podemos salir del método
+              }
+          }
+          System.out.println("No se encontró ningún libro con el ISBN '" + searchIsbn + "'.");
+      } else {
+          System.out.println("Opción de búsqueda inválida.");
+      }
+  }
+
+  private void AddBook() {
+    System.out.println("\nIngrese los detalles del nuevo libro:");
+    System.out.print("ISBN: ");
+    String isbn = scanner.nextLine();
+    System.out.print("Título: ");
+    String title = scanner.nextLine();
+    System.out.print("Autor: ");
+    String author = scanner.nextLine();
+
+    Book newBook = new Book(isbn, title, author);
+    this.books.add(newBook);
+    System.out.println("El libro '" + newBook.getTitle() + "' ha sido agregado a la biblioteca.");
   }
 }

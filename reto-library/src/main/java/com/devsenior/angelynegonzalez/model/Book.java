@@ -23,5 +23,9 @@ public class Book {
     public String getAuthor() {
         return author;
     }
+    @Override
+    public String toString() {
+        return "Título: " + title + ", Autor: " + author + ", ISBN: " + isbn;
+    }
 
 }
