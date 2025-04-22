@@ -90,9 +90,31 @@ public Biblioteca() {
   }
 
   private void LoanBook() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'LoanBook'");
+    System.out.print("\nIngrese el título del libro que desea prestar: ");
+    String titleToBorrow = scanner.nextLine();
+
+  Book bookToBorrow = findBookByTitle(titleToBorrow);
+
+    if (bookToBorrow != null) {
+        if (!bookToBorrow.isBorrowed()) {
+            bookToBorrow.setBorrowed(true);
+            System.out.println("El libro '" + bookToBorrow.getTitle() + "' ha sido prestado.");
+        } else {
+            System.out.println("El libro '" + bookToBorrow.getTitle() + "' ya está prestado.");
+        }
+    } else {
+        System.out.println("No se encontró ningún libro con el título '" + titleToBorrow + "'.");
+    }
+}
+
+  private Book findBookByTitle(String titleToBorrow) {
+    for (Book book : books) {
+      if (book.getTitle().equals(titleToBorrow)) {
+          return book;
+      }
   }
+  return null;
+}
 
   private void ConsultBook() {
     System.out.println("\n¿Cómo desea buscar el libro?");
