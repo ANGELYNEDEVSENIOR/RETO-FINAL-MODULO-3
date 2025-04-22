@@ -8,7 +8,7 @@ public class Loan {
     private LocalDate loanDate;
     private LoanState state;
 
-    public Loan(User user, Book book) {
+    public Loan(String string, User user, Book book, LocalDate loanDate2, LocalDate dueDate) {
         this(user, book, LocalDate.now(), LoanState.STARTED);
     }
 
@@ -42,4 +42,15 @@ public class Loan {
     public void setState(LoanState state) {
         this.state = state;
     }
+
+    public void setReturnDate(LocalDate returnDate) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setReturnDate'");
+    }
+
+    public Object getIsbn() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getIsbn'");
+    }
+    
 }
