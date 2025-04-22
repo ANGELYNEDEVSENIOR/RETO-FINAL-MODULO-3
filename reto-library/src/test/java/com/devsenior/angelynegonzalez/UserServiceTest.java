@@ -86,7 +86,7 @@ public class UserServiceTest {
         // WHEN - THEN
         assertThrows(NotFoundException.class, () -> service.getUserById(id));
     }
-
+// ...
     @Test
     void testUpdateUserEmailExistingUser() throws NotFoundException {
         // GIVEN
